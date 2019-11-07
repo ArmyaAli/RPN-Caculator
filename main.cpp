@@ -15,6 +15,9 @@ std::stack<char> expressionStack;
 int performOperation(char Operator, std::vector<int>& operands);
 // checks if the character is +,-,/,*
 bool isOperator(char c);
+// check valid operator
+bool isDigit(char c);
+bool isNumeric(std::string& s); // isNumeric excluding operators
 int main()
 {
     std::vector<int> temp;
@@ -22,6 +25,13 @@ int main()
     // get our expression
     std::cout << "Enter your expression in RPN notation (eg. 23+34-*)" << std::endl;
     std::getline(std::cin, expression);
+
+    while(!isNumeric(expression))
+    {
+        std::cout << "Please enter valid numbers thanks!" << std::endl;
+        std::cin.ignore();
+        std::getline(std::cin, expression);
+    }
 
     for(int i = 0; i < expression.length(); i++)
     {
@@ -37,7 +47,7 @@ int main()
             }
             result = performOperation(expression[i], temp);
             expressionStack.push(result);
-            temp.erase(temp.begin(), temp.end());
+            temp.erase(temp.begin(), temp.end()); // delete our temp array
             
         }
         
@@ -68,6 +78,7 @@ int performOperation(char Operator, std::vector<int>& operands)
             retVal *= operands[i];
         break;
         case '/':
+        retVal = 1;
         for(int i = 0; i < operands.size(); i++)    // integer division to do
             retVal /= operands[i];
         break;
@@ -79,4 +90,23 @@ int performOperation(char Operator, std::vector<int>& operands)
 bool isOperator(char c)
 {
     return c == '+' || c == '-' || c == '/' || c == '*';
+}
+
+
+bool isDigit(char c)
+{
+    return c >= '0'  && c <= '9';
+}
+
+bool isNumeric(std::string& s)
+{
+    bool retFlag = true;
+
+    for(int i = 0; i < s.length(); i++)
+    {   
+        if(!isDigit(s[i]) && !isOperator(s[i])) // not an operator or not a digit 
+            retFlag = false;
+    }
+
+    return retFlag;
 }
