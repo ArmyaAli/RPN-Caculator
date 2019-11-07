@@ -63,6 +63,7 @@ int performOperation(char Operator, std::vector<int>& operands)
              retVal -= operands[i];
         break;
         case '*':
+        retVal = 1;
         for(int i = 0; i < operands.size(); i++)
             retVal *= operands[i];
         break;
