@@ -12,7 +12,7 @@ std::string expression;
 std::stack<char> expressionStack;
 
 // performs the selected operation depending on the operator {+, -, *, /}
-int performOperation(char Operator, std::vector<int>& operands);
+int performOperation(char Operator, int operand_A, int operand_B);
 // checks if the character is +,-,/,*
 bool isOperator(char c);
 // check valid operator
@@ -20,8 +20,8 @@ bool isDigit(char c);
 bool isNumeric(std::string& s); // isNumeric excluding operators
 int main()
 {
-    std::vector<int> temp;
     int result = 0;
+	int operand_A, operand_B;
     // get our expression
     std::cout << "Enter your expression in RPN notation (eg. 23+34-*)" << std::endl;
     std::getline(std::cin, expression);
@@ -29,64 +29,57 @@ int main()
     while(!isNumeric(expression))
     {
         std::cout << "Please enter valid numbers thanks!" << std::endl;
-        std::cin.ignore();
         std::getline(std::cin, expression);
     }
 
     for(int i = 0; i < expression.length(); i++)
     {
-        // first add to our stack till we hit an oeprator
-        if(!isOperator(expression[i]))
-            expressionStack.push(expression[i] - '0');
-        else
-        {
-            while(!expressionStack.empty())
-            {
-                 temp.push_back(expressionStack.top());
-                 expressionStack.pop();
-            }
-            result = performOperation(expression[i], temp);
-            expressionStack.push(result);
-            temp.erase(temp.begin(), temp.end()); // delete our temp array
-            
-        }
+		if (isOperator(expression[i])) {
+			operand_A = expressionStack.top();
+			expressionStack.pop();
+			operand_B = expressionStack.top();
+			expressionStack.pop();
+			result = performOperation(expression[i], (int) operand_A - '0', (int) operand_B - '0');
+			expressionStack.push(result);
+			
+		}
+		else if(!isOperator(expression[i]))
+		{
+			expressionStack.push(expression[i]);
+		}
         
     }
+	result = expressionStack.top();
+	expressionStack.pop();
 
     std::cout << result << std::endl;
+	std::cin.get();
     return 0;
 }
 
-int performOperation(char Operator, std::vector<int>& operands)
+
+int performOperation(char Operator, int A, int B)
 {
-    int retVal = 0;
+	int retVal = 0;
 
-    switch(Operator)
-    {
-        case '+':
-        for(int i = 0; i < operands.size(); i++)
-            retVal += operands[i];
-        break;
-        case '-':
-        retVal = operands[0];
-        for(int i = 1; i < operands.size(); i++)
-             retVal -= operands[i];
-        break;
-        case '*':
-        retVal = 1;
-        for(int i = 0; i < operands.size(); i++)
-            retVal *= operands[i];
-        break;
-        case '/':
-        retVal = 1;
-        for(int i = 0; i < operands.size(); i++)    // integer division to do
-            retVal /= operands[i];
-        break;
-    }
+	switch (Operator)
+	{
+	case '+':
+		retVal = A + B;
+		break;
+	case '-':
+		retVal = A - B;
+		break;
+	case '*':
+		retVal = A * B;
+		break;
+	case '/':
+		retVal = A / B;
+		break;
+	}
 
-    return retVal;
+	return retVal;
 }
-
 bool isOperator(char c)
 {
     return c == '+' || c == '-' || c == '/' || c == '*';
